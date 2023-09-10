@@ -1,4 +1,4 @@
-name: Azure App Service CI/CD
+name: Azure App Service Deployment
 
 on:
   push:
@@ -19,11 +19,16 @@ jobs:
           python-version: 3.x
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
-      - name: Build and deploy to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: Todo-Manager  # Replace with your Azure App Service name
-          publish-profile: secrets.AZURE_WEBAPP_PUBLISH_PROFILE
+          package: .
+          slot-name: production  # Optional, specify if using deployment slots
